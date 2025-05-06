@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cable Size Calculator</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+            width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="number"], select {
+            width: calc(100% - 12px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .result-item {
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .highlight {
+            color: #28a745;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cable Size Calculator</h1>
+
+        <div class="input-group">
+            <label for="loadValue">Enter Load Value:</label>
+            <input type="number" id="loadValue" placeholder="Enter kW or kVA">
+        </div>
+
+        <div class="input-group">
+            <label for="loadUnit">Select Load Unit:</label>
+            <select id="loadUnit">
+                <option value="kW">kW</option>
+                <option value="kVA">kVA</option>
+                <option value="Amps">Amps (Approximate)</option>
+            </select>
+        </div>
+
+        <button onclick="calculateCableSize()">Calculate Cable Size</button>
+
+        <div class="result-box" id="result">
+            <h2>Recommended Cable Sizes</h2>
+            <div class="result-item">Copper Cable: <span id="copperSize"></span></div>
+            <div class="result-item">Aluminum Cable: <span id="aluminumSize"></span></div>
+            <div class="result-item">(Based on quick memory formulas)</div>
+        </div>
+    </div>
+
+    <script>
+        function calculateCableSize() {
+            const loadValue = parseFloat(document.getElementById("loadValue").value);
+            const loadUnit = document.getElementById("loadUnit").value;
+            const resultDiv = document.getElementById("result");
+            const copperSizeSpan = document.getElementById("copperSize");
+            const aluminumSizeSpan = document.getElementById("aluminumSize");
+
+            if (isNaN(loadValue)) {
+                copperSizeSpan.textContent = "Please enter a valid number.";
+                aluminumSizeSpan.textContent = "";
+                return;
+            }
+
+            let copperCableSize;
+            let aluminumCableSize;
+
+            if (loadUnit === "kW") {
+                copperCableSize = Math.round(loadValue * 1);
+                aluminumCableSize = Math.round(loadValue * 1.5);
+            } else if (loadUnit === "kVA") {
+                copperCableSize = Math.round(loadValue * 0.8);
+                aluminumCableSize = Math.round(loadValue * 1.2);
+            } else if (loadUnit === "Amps") {
+                // This is a very rough estimate, assuming typical voltage and power factor
+                // For a more accurate conversion, you'd need voltage and PF.
+                // We'll use a reverse of our thumb rules for a rough idea.
+                copperCableSize = Math.round(loadValue / 5);
+                aluminumCableSize = Math.round(loadValue / 3);
+            } else {
+                copperSizeSpan.textContent = "Please select a valid load unit.";
+                aluminumSizeSpan.textContent = "";
+                return;
+            }
+
+            copperSizeSpan.textContent = copperCableSize > 0 ? `${copperCableSize} mm²` : "N/A";
+            aluminumSizeSpan.textContent = aluminumCableSize > 0 ? `${aluminumCableSize} mm²` : "N/A";
+            resultDiv.style.display = "block"; // Make the result visible
+        }
+
+        // Initially hide the result box
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('result').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
